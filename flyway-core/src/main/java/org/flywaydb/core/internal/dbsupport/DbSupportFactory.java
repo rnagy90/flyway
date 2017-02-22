@@ -15,6 +15,10 @@
  */
 package org.flywaydb.core.internal.dbsupport;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.internal.dbsupport.db2.DB2DbSupport;
 import org.flywaydb.core.internal.dbsupport.db2zos.DB2zosDbSupport;
@@ -24,6 +28,7 @@ import org.flywaydb.core.internal.dbsupport.h2.H2DbSupport;
 import org.flywaydb.core.internal.dbsupport.hsql.HsqlDbSupport;
 import org.flywaydb.core.internal.dbsupport.mysql.MySQLDbSupport;
 import org.flywaydb.core.internal.dbsupport.oracle.OracleDbSupport;
+import org.flywaydb.core.internal.dbsupport.orientdb.OrientDBDbSupport;
 import org.flywaydb.core.internal.dbsupport.phoenix.PhoenixDbSupport;
 import org.flywaydb.core.internal.dbsupport.postgresql.PostgreSQLDbSupport;
 import org.flywaydb.core.internal.dbsupport.redshift.RedshfitDbSupportViaPostgreSQLDriver;
@@ -37,10 +42,6 @@ import org.flywaydb.core.internal.dbsupport.sybase.ase.SybaseASEDbSupport;
 import org.flywaydb.core.internal.dbsupport.vertica.VerticaDbSupport;
 import org.flywaydb.core.internal.util.logging.Log;
 import org.flywaydb.core.internal.util.logging.LogFactory;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 
 /**
  * Factory for obtaining the correct DbSupport instance for the current connection.
@@ -141,6 +142,10 @@ public class DbSupportFactory {
         }
         if (databaseProductName.startsWith("HDB")) {
             return new SapHanaDbSupport(connection);
+        }
+
+        if (databaseProductName.startsWith("OrientDB")) {
+          return new OrientDBDbSupport(connection);
         }
 
         throw new FlywayException("Unsupported Database: " + databaseProductName);
