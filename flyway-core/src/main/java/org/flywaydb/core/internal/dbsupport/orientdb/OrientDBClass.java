@@ -28,12 +28,13 @@ public class OrientDBClass extends Table {
 
   @Override
   protected void doLock() throws SQLException {
-    jdbcTemplate.execute("SELECT FROM " + name);
+    // TODO: maybe it will cause a deadlock, or simply not working
+    jdbcTemplate.execute("SELECT FROM " + this + " LOCK RECORD");
   }
 
   @Override
   protected void doDrop() throws SQLException {
-    jdbcTemplate.execute("DROP CLASS " + name);
+    jdbcTemplate.execute("DROP CLASS " + this);
   }
 
   @Override

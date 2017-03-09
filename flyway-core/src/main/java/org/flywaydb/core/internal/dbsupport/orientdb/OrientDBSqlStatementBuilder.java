@@ -8,10 +8,26 @@
  */
 package org.flywaydb.core.internal.dbsupport.orientdb;
 
+import java.util.regex.Pattern;
+
 import org.flywaydb.core.internal.dbsupport.SqlStatement;
 import org.flywaydb.core.internal.dbsupport.SqlStatementBuilder;
 
 public class OrientDBSqlStatementBuilder extends SqlStatementBuilder {
+
+  private Pattern NON_TRANSACTION_SUPPORTED_SCRIPT =
+    Pattern.compile("(DROP|CREATE|ALTER) (CLASS|PROPERTY|INDEX|DATABASE) .*");
+
+  @Override
+  protected void applyStateChanges(String line) {
+    super.applyStateChanges(line);
+
+    if (!executeInTransaction) {
+      return;
+    }
+
+    executeInTransaction = !NON_TRANSACTION_SUPPORTED_SCRIPT.matcher(line).matches();
+  }
 
   @Override
   public SqlStatement getSqlStatement() {
